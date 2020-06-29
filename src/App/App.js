@@ -6,8 +6,11 @@ import NotePageNav from '../NotePageNav/NotePageNav';
 import NoteListMain from '../NoteListMain/NoteListMain';
 import NotePageMain from '../NotePageMain/NotePageMain';
 
+import { API_URL } from '../config';
+
 import CreateContext from '../ContextStore';
 import './App.css';
+import NotefulForm from '../NotefulForm/NotefulForm';
 
 class App extends Component {
   state = {
@@ -16,7 +19,7 @@ class App extends Component {
   };
 
   fetchAPI = (endpoint) => {
-    return fetch(`http://localhost:8000/${endpoint}`)
+    return fetch(`${API_URL}${endpoint}`)
       .then((res) => {
         if (res.ok) {
           return res.json();
@@ -28,7 +31,7 @@ class App extends Component {
   };
 
   deleteNote = (noteId) => {
-    return fetch(`http://localhost:8000/notes/${noteId}`, {
+    return fetch(`${API_URL}notes/${noteId}`, {
       method: 'DELETE',
       headers: {
         'content-type': 'application/json',
@@ -91,27 +94,31 @@ class App extends Component {
           <Route exact key={path} path={path} component={NoteListMain} />
         ))}
         <Route path="/notes/:noteId" component={NotePageMain} />
+        <Route path="/add-folder" component={NotefulForm} />
       </CreateContext.Provider>
     );
   }
 
   render() {
-    if (this.state.notes.length > 0 && this.state.folders.length > 0) {
-      return (
-        <div className="App">
-          <nav className="App__nav">{this.renderNavRoutes()}</nav>
-          <header className="App__header">
-            <h1>
-              <Link to="/">Noteful</Link>{' '}
-              <FontAwesomeIcon icon="check-double" />
-            </h1>
-          </header>
-          <main className="App__main">{this.renderMainRoutes()}</main>
-        </div>
-      );
-    } else {
-      return <div>Loading</div>;
-    }
+    return (
+      <div className="App">
+        <nav className="App__nav">
+          {this.state.notes.length > 0 && this.state.folders.length > 0
+            ? this.renderNavRoutes()
+            : 'Loading...'}
+        </nav>
+        <header className="App__header">
+          <h1>
+            <Link to="/">Noteful</Link> <FontAwesomeIcon icon="check-double" />
+          </h1>
+        </header>
+        <main className="App__main">
+          {this.state.notes.length > 0 && this.state.folders.length > 0
+            ? this.renderMainRoutes()
+            : 'Loading'}
+        </main>
+      </div>
+    );
   }
 }
 
