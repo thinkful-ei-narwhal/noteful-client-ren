@@ -5,12 +5,11 @@ import NoteListNav from '../NoteListNav/NoteListNav';
 import NotePageNav from '../NotePageNav/NotePageNav';
 import NoteListMain from '../NoteListMain/NoteListMain';
 import NotePageMain from '../NotePageMain/NotePageMain';
-
+import AddFolder from '../AddFolder/AddFolder';
+import AddNote from '../AddNote/AddNote';
 import { API_URL } from '../config';
-
-import CreateContext from '../ContextStore';
+import ApiContext from '../ApiContext';
 import './App.css';
-import NotefulForm from '../NotefulForm/NotefulForm';
 
 class App extends Component {
   state = {
@@ -46,6 +45,13 @@ class App extends Component {
     });
   };
 
+  handleAddFolder = (folder) => {
+    this.setState({ folders: [...this.state.folders, folder] });
+  };
+  handleAddNote = (note) => {
+    this.setState({ notes: [...this.state.notes, note] });
+  };
+
   componentDidMount() {
     this.fetchAPI('notes').then((res) => {
       this.setState({
@@ -61,63 +67,60 @@ class App extends Component {
   }
 
   renderNavRoutes() {
-    const { notes, folders } = this.state;
     return (
-      <CreateContext.Provider
-        value={{
-          notes: notes,
-          folders: folders,
-        }}
-      >
-        {['/', '/folders/:folderId'].map((path) => (
+      <>
+        {['/', '/folder/:folderId'].map((path) => (
           <Route exact key={path} path={path} component={NoteListNav} />
         ))}
-        <Route path="/notes/:noteId" component={NotePageNav} />
+        <Route path="/note/:noteId" component={NotePageNav} />
         <Route path="/add-folder" component={NotePageNav} />
         <Route path="/add-note" component={NotePageNav} />
-      </CreateContext.Provider>
+      </>
     );
   }
 
   renderMainRoutes() {
-    const { notes, folders } = this.state;
-
     return (
-      <CreateContext.Provider
-        value={{
-          notes: notes,
-          folders: folders,
-          deleteNote: this.deleteNote,
-        }}
-      >
-        {['/', '/folders/:folderId'].map((path) => (
+      <>
+        {['/', '/folder/:folderId'].map((path) => (
           <Route exact key={path} path={path} component={NoteListMain} />
         ))}
-        <Route path="/notes/:noteId" component={NotePageMain} />
-        <Route path="/add-folder" component={NotefulForm} />
-      </CreateContext.Provider>
+        <Route path="/note/:noteId" component={NotePageMain} />
+        <Route path="/add-folder" component={AddFolder} />
+        <Route path="/add-note" component={AddNote} />
+      </>
     );
   }
 
   render() {
+    const value = {
+      notes: this.state.notes,
+      folders: this.state.folders,
+      addFolder: this.handleAddFolder,
+      addNote: this.handleAddNote,
+      deleteNote: this.deleteNote,
+    };
     return (
-      <div className="App">
-        <nav className="App__nav">
-          {this.state.notes.length > 0 && this.state.folders.length > 0
-            ? this.renderNavRoutes()
-            : 'Loading...'}
-        </nav>
-        <header className="App__header">
-          <h1>
-            <Link to="/">Noteful</Link> <FontAwesomeIcon icon="check-double" />
-          </h1>
-        </header>
-        <main className="App__main">
-          {this.state.notes.length > 0 && this.state.folders.length > 0
-            ? this.renderMainRoutes()
-            : 'Loading'}
-        </main>
-      </div>
+      <ApiContext.Provider value={value}>
+        <div className="App">
+          <nav className="App__nav">
+            {this.state.notes.length > 0 && this.state.folders.length > 0
+              ? this.renderNavRoutes()
+              : 'Loading...'}
+          </nav>
+          <header className="App__header">
+            <h1>
+              <Link to="/">Noteful</Link>{' '}
+              <FontAwesomeIcon icon="check-double" />
+            </h1>
+          </header>
+          <main className="App__main">
+            {this.state.notes.length > 0 && this.state.folders.length > 0
+              ? this.renderMainRoutes()
+              : 'Loading'}
+          </main>
+        </div>
+      </ApiContext.Provider>
     );
   }
 }

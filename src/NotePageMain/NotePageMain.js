@@ -1,10 +1,11 @@
 import React from 'react';
 import Note from '../Note/Note';
-import CreateContext from '../ContextStore';
+import ApiContext from '../ApiContext';
 import { findNote } from '../notes-helpers';
 import './NotePageMain.css';
+
 export default class NotePageMain extends React.Component {
-  static contextType = CreateContext;
+  static contextType = ApiContext;
   render() {
     const { notes } = this.context;
     const { noteId } = this.props.match.params;
@@ -16,6 +17,7 @@ export default class NotePageMain extends React.Component {
           id={note.id}
           name={note.note_name}
           modified={note.modified}
+          onDeleteNote={this.handleDeleteNote}
           {...this.props}
         />
         <div className="NotePageMain__content">
@@ -27,9 +29,3 @@ export default class NotePageMain extends React.Component {
     );
   }
 }
-
-NotePageMain.defaultProps = {
-  note: {
-    content: '',
-  },
-};

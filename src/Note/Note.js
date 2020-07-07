@@ -3,17 +3,17 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './Note.css';
-import CreateContext from '../ContextStore';
+import ApiContext from '../ApiContext';
 
 export default class Note extends React.Component {
-  static contextType = CreateContext;
+  static contextType = ApiContext;
   render() {
     const { deleteNote } = this.context;
 
     return (
       <div className="Note">
         <h2 className="Note__title">
-          <Link to={`/notes/${this.props.id}`}>{this.props.name}</Link>
+          <Link to={`/note/${this.props.id}`}>{this.props.name}</Link>
         </h2>
         <button
           className="Note__delete"

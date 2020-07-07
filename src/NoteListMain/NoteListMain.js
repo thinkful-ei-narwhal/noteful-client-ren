@@ -4,21 +4,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Note from '../Note/Note';
 import CircleButton from '../CircleButton/CircleButton';
 import { getNotesForFolder } from '../notes-helpers';
-import CreateContext from '../ContextStore';
+import ApiContext from '../ApiContext';
 import './NoteListMain.css';
 
 export default class NoteListMain extends React.Component {
-  static contextType = CreateContext;
+  static contextType = ApiContext;
   render() {
-    const { notes } = this.context;
-
     const { folderId } = this.props.match.params;
-    const notesForFolder = getNotesForFolder(notes, Number(folderId));
-    // console.log(
-    //   !folderId ? notes : notes.filter((note) => note.folder_id === folderId)
-    // );
-    //console.log(folderId);
-
+    const { notes = [] } = this.context;
+    const notesForFolder = getNotesForFolder(notes, folderId);
     return (
       <section className="NoteListMain">
         <ul>
@@ -49,9 +43,3 @@ export default class NoteListMain extends React.Component {
     );
   }
 }
-// const { folderId } = routeProps.match.params;
-// const notesForFolder = getNotesForFolder(notes, folderId);
-
-NoteListMain.defaultProps = {
-  notes: [],
-};
